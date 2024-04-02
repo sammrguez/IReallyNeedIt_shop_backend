@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const { PORT = 3000 } = process.env;
 /* conexion a MongoDB */
@@ -19,6 +20,16 @@ db.once('open', () => {
 /* parsers */
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+
+/* cors */
+app.use(
+  cors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
+  })
+);
 
 /* importando routers */
 const productsRouter = require('./routes/products');
