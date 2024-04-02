@@ -31,7 +31,6 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   'photo-link': {
-    required: true,
     type: String,
     validate: {
       validator(v) {
