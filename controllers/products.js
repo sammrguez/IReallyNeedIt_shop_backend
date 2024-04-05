@@ -7,3 +7,13 @@ module.exports.getProducts = (req, res) => {
       res.send(products);
     });
 };
+
+module.exports.getPromoProduct = (req, res) => {
+  Product.findOne({
+    isPromo: true,
+  })
+    .orFail()
+    .then((product) => {
+      res.send(product);
+    });
+};

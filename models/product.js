@@ -30,6 +30,10 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  isPromo: {
+    type: Boolean,
+    default: false,
+  },
   'photo-link': {
     type: String,
     validate: {
