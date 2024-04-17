@@ -22,7 +22,7 @@ module.exports.createUserAndLogin = (req, res) => {
               const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
                 expiresIn: '7d',
               });
-              res.send(token);
+              res.status(200).json({ user, token });
             })
             .catch((err) => {
               res.send(err);
@@ -43,7 +43,7 @@ module.exports.createUserAndLogin = (req, res) => {
             const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
               expiresIn: '7d',
             });
-            res.send(token);
+            res.status(200).json({ user, token });
           })
           .catch((err) => {
             console.log(err);
