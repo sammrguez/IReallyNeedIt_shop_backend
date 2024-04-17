@@ -19,7 +19,10 @@ module.exports.createUserAndLogin = (req, res) => {
             hashedGoogleId: hash,
           })
             .then((user) => {
-              res.send(user);
+              const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+                expiresIn: '7d',
+              });
+              res.send(token);
             })
             .catch((err) => {
               res.send(err);
