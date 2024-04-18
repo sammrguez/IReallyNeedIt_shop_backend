@@ -1,6 +1,39 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+const addressSchema = new mongoose.Schema({
+  calle: {
+    required: true,
+    type: String,
+  },
+  noExterior: {
+    required: true,
+    type: String,
+  },
+  noInterior: {
+    required: false,
+    type: String,
+  },
+  postalcode: {
+    minlength: 4,
+    maxlength: 6,
+    required: true,
+    type: Number,
+  },
+  municipio: {
+    required: true,
+    type: String,
+  },
+  state: {
+    required: true,
+    type: String,
+  },
+  extraInfo: {
+    required: false,
+    type: String,
+  },
+});
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -13,6 +46,10 @@ const userSchema = new mongoose.Schema({
   hashedGoogleId: {
     type: String,
     required: true,
+  },
+  adress: {
+    type: addressSchema,
+    required: false,
   },
 });
 
