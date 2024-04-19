@@ -30,8 +30,6 @@ module.exports.createUserAndLogin = (req, res) => {
             });
         });
       } else {
-        console.log('si hay user, se iniciara sesion');
-
         return bcrypt
           .compare(googleId, user.hashedGoogleId)
           .then((matched) => {
@@ -81,22 +79,26 @@ module.exports.createUserAndLogin = (req, res) => {
 };
 module.exports.addDirection = (req, res) => {
   const { email, googleId } = req.body;
-  User.findUserByCredentials(email, googleId).then((user) => {
-    // if (!user.adress) {
-    //   console.log('falta meter direccion');
-    // }
-  });
+  console.log('desde add direction');
+  res.send(email);
 };
 
-function login(email, googleId) {
-  return User.findUserByCredentials(email, googleId)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: '7d',
+module.exports.userData = (req, res) => {
+  console.log('desde my profile');
+  const userId = req.user._id;
+  if (!userId) {
+    return res.status(401).send({ message: 'no tienes authorizacion' });
+  } else {
+    User.findById(userId)
+      .orFail(() => {
+        const error = new UNAUTHORIZED_ERROR_CODE(
+          'No tienes autorización para acceder a esta contenido'
+        );
+        error.statusCode = 404;
+        throw error;
+      })
+      .then((user) => {
+        res.send(user);
       });
-      return token;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
+  }
+};

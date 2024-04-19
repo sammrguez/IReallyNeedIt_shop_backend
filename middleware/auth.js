@@ -11,6 +11,7 @@ module.exports = (req, res, next) => {
     let payload;
     try {
       payload = jwt.verify(token, JWT_SECRET);
+      console.log(payload);
     } catch (error) {
       return res.status(401).send({ message: 'no tienes authorizacion' });
     }
