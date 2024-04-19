@@ -24,6 +24,7 @@ module.exports.createUserAndLogin = (req, res) => {
               });
               res.status(200).json({ user, token });
             })
+
             .catch((err) => {
               res.send(err);
             });
@@ -77,6 +78,14 @@ module.exports.createUserAndLogin = (req, res) => {
   //       res.send(token);
   //     }
   //   });
+};
+module.exports.addDirection = (req, res) => {
+  const { email, googleId } = req.body;
+  User.findUserByCredentials(email, googleId).then((user) => {
+    // if (!user.adress) {
+    //   console.log('falta meter direccion');
+    // }
+  });
 };
 
 function login(email, googleId) {
