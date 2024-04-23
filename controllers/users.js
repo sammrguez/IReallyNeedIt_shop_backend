@@ -85,6 +85,7 @@ module.exports.addDirection = (req, res) => {
 
 module.exports.userData = (req, res) => {
   console.log('desde my profile');
+  console.log(req.user._id);
   const userId = req.user._id;
   if (!userId) {
     return res.status(401).send({ message: 'no tienes authorizacion' });
@@ -99,6 +100,7 @@ module.exports.userData = (req, res) => {
       })
       .then((user) => {
         res.send(user);
+        console.log(user);
       });
   }
 };
