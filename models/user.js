@@ -2,25 +2,29 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const addressSchema = new mongoose.Schema({
-  calle: {
+  street: {
     required: true,
     type: String,
   },
-  noExterior: {
+  exteriorNumber: {
     required: true,
     type: String,
   },
-  noInterior: {
+  interiorNumber: {
     required: false,
     type: String,
   },
-  postalcode: {
+  postalCode: {
     minlength: 4,
     maxlength: 6,
     required: true,
     type: Number,
   },
-  municipio: {
+  municipality: {
+    required: true,
+    type: String,
+  },
+  neighborhood: {
     required: true,
     type: String,
   },
@@ -28,7 +32,7 @@ const addressSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
-  extraInfo: {
+  specialInstructions: {
     required: false,
     type: String,
   },
@@ -47,7 +51,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  adress: {
+  address: {
     type: addressSchema,
     required: false,
   },

@@ -52,35 +52,6 @@ module.exports.createUserAndLogin = (req, res) => {
     .catch((err) => {
       console.log(err);
     });
-  //   User.findOne({ email }).then((user) => {
-  //     if (!user) {
-  //       console.log('cayo en bloque crear user');
-  //       bcrypt
-  //         .hash(googleId, 10)
-  //         .then((hash) => {
-  //           return User.create({
-  //             name,
-  //             email,
-  //             hashedGoogleId: hash,
-  //           });
-  //         })
-  //         .then((user) => {
-  //           res.send(user);
-  //         })
-  //         .catch((err) => {
-  //           res.send(err);
-  //         });
-  //     } else {
-  //       console.log('cayo en bloque iniciar sesion');
-  //       const token = login(email, googleId);
-  //       res.send(token);
-  //     }
-  //   });
-};
-module.exports.addDirection = (req, res) => {
-  const { email, googleId } = req.body;
-  console.log('desde add direction');
-  res.send(email);
 };
 
 module.exports.userData = (req, res) => {
@@ -101,6 +72,23 @@ module.exports.userData = (req, res) => {
       .then((user) => {
         res.send(user);
         console.log(user);
+      });
+  }
+};
+
+module.exports.addAddress = (req, res) => {
+  const address = req.body;
+  const userId = req.user._id;
+
+  if (!userId) {
+    return res.status(401).send({ message: 'no tienes authorizacion' });
+  } else {
+    User.findByIdAndUpdate(userId, { address: address }, { new: true })
+      .then((user) => {
+        res.send(user);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 };

@@ -2,12 +2,12 @@ const router = require('express').Router();
 const auth = require('../middleware/auth');
 const {
   createUserAndLogin,
-  addDirection,
+  addAddress,
   userData,
 } = require('../controllers/users');
 
 router.post('/registro', createUserAndLogin);
-router.get('/pago', addDirection);
 router.get('/users/me', auth, userData);
+router.patch('/users/me/address', auth, addAddress);
 
 module.exports = router;
