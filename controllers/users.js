@@ -8,6 +8,7 @@ module.exports.createUserAndLogin = (req, res) => {
   console.log(req.body);
   const { name, email, googleId } = req.body;
   return User.findOne({ email })
+    .select('+hashedGoogleId')
     .then((user) => {
       if (!user) {
         console.log('no hay user, se creara uno');

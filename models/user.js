@@ -50,6 +50,7 @@ const userSchema = new mongoose.Schema({
   hashedGoogleId: {
     type: String,
     required: true,
+    select: false,
   },
   address: {
     type: addressSchema,
