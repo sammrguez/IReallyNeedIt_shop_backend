@@ -29,7 +29,4 @@ module.exports.makeOrder = (req, res) => {
           res.send(err);
         });
     });
-  console.log(items);
-  console.log(userId);
-  console.log('llegaron los pedidos');
 };
