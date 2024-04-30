@@ -12,6 +12,10 @@ const orderSchema = new mongoose.Schema({
     ref: 'user',
     required: true,
   },
+  ShippingAddress: {
+    type: Object,
+    required: true,
+  },
   trackId: {
     type: String,
     required: true,

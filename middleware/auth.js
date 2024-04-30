@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     return res.status(401).send({ message: 'no tienes authorizacion' });
   } else {
     const token = authorization.replace('Bearer ', '');
-    console.log(`si hay token, es: ${token}`);
+
     let payload;
     try {
       payload = jwt.verify(token, JWT_SECRET);

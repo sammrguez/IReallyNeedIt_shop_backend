@@ -5,13 +5,13 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = '3199a1ee12430d5ea077aa8585caf1e8';
 
 module.exports.createUserAndLogin = (req, res) => {
-  console.log(req.body);
+
   const { name, email, googleId } = req.body;
   return User.findOne({ email })
     .select('+hashedGoogleId')
     .then((user) => {
       if (!user) {
-        console.log('no hay user, se creara uno');
+      
 
         return bcrypt.hash(googleId, 10).then((hash) => {
           return User.create({
@@ -56,8 +56,7 @@ module.exports.createUserAndLogin = (req, res) => {
 };
 
 module.exports.userData = (req, res) => {
-  console.log('desde my profile');
-  console.log(req.user._id);
+  
   const userId = req.user._id;
   if (!userId) {
     return res.status(401).send({ message: 'no tienes authorizacion' });

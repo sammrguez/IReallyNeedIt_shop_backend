@@ -18,6 +18,7 @@ module.exports.makeOrder = (req, res) => {
       Order.create({
         items: items,
         user: user,
+        ShippingAddress: user.address,
         trackId: trackId,
       })
         .then((order) => {
@@ -26,7 +27,12 @@ module.exports.makeOrder = (req, res) => {
           });
         })
         .catch((err) => {
-          res.send(err);
+          res.status(500).json({ error: 'Error al crear la orden' });
         });
+    })
+    .catch((err) => {
+      res
+        .status(err.statusCode || 500)
+        .json({ error: err.message || 'Error interno del servidor' });
     });
 };
