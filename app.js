@@ -34,10 +34,12 @@ app.use(
 /* importando routers */
 const productsRouter = require('./routes/products');
 const usersRouter = require('./routes/users');
+const ordersRouter = require('./routes/orders.js');
 
 /* usando routers */
 app.use('/', productsRouter);
 app.use('/', usersRouter);
+app.use('/', ordersRouter);
 
 /* conect to port */
 app.listen(PORT, () => {
