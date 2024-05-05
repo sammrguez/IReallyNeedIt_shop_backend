@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const { NODE_ENV, JWT_SECRET } = process.env;
 
-const JWT_SECRET = '3199a1ee12430d5ea077aa8585caf1e8';
+//
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
@@ -11,7 +13,14 @@ module.exports = (req, res, next) => {
 
     let payload;
     try {
-      payload = jwt.verify(token, JWT_SECRET);
+      if (NODE_ENV !== 'production') {
+      }
+      payload = jwt.verify(
+        token,
+        NODE_ENV === 'production'
+          ? JWT_SECRET
+          : '3199a1ee12430d5ea077aa8585caf1e8'
+      );
     } catch (error) {
       return res.status(401).send({ message: 'no tienes authorizacion' });
     }

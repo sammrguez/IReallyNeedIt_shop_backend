@@ -7,13 +7,10 @@ module.exports.makeOrder = (req, res) => {
   const userId = req.user._id;
   const trackId = shortid.generate();
   User.findById(userId)
-    .orFail(() => {
-      const error = new UNAUTHORIZED_ERROR_CODE(
-        'No tienes autorización para acceder a esta contenido'
-      );
-      error.statusCode = 404;
-      throw error;
-    })
+    // .orFail((error) => {
+    //   error.statusCode = 404;
+    //   throw error;
+    // })
     .then((user) => {
       Order.create({
         items: items,
