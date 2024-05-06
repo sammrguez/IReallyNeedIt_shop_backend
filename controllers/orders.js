@@ -1,16 +1,20 @@
 const shortid = require('shortid');
 const User = require('../models/user');
 const Order = require('../models/order');
+const {
+  ERROR_CODE,
+  NOT_FOUND_CODE,
+  SERVER_ERROR_CODE,
+  INVALID_DATA_ERROR_CODE,
+  UNAUTHORIZED_ERROR_CODE,
+} = require('../controllers/errors');
 
-module.exports.makeOrder = (req, res) => {
+module.exports.makeOrder = (req, res, next) => {
   const items = req.body;
   const userId = req.user._id;
   const trackId = shortid.generate();
   User.findById(userId)
-    // .orFail((error) => {
-    //   error.statusCode = 404;
-    //   throw error;
-    // })
+    .orFail()
     .then((user) => {
       Order.create({
         items: items,
@@ -23,13 +27,7 @@ module.exports.makeOrder = (req, res) => {
             trackId: trackId,
           });
         })
-        .catch((err) => {
-          res.status(500).json({ error: 'Error al crear la orden' });
-        });
+        .catch(next);
     })
-    .catch((err) => {
-      res
-        .status(err.statusCode || 500)
-        .json({ error: err.message || 'Error interno del servidor' });
-    });
+    .catch(next);
 };

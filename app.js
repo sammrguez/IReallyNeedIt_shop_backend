@@ -1,78 +1,11 @@
-// const express = require('express');
-// const app = express();
-// const path = require('path');
-// const mongoose = require('mongoose');
-// const cors = require('cors');
-
-// const { PORT = 3000 } = process.env;
-// // /* conexion a MongoDB */
-
-// const uri =
-//   'mongodb+srv://sammrguez:IRNIclusterpassword@irnicluster.hjnrszc.mongodb.net/?retryWrites=true&w=majority&appName=IRNIcluster';
-// const clientOptions = {
-//   serverApi: { version: '1', strict: true, deprecationErrors: true },
-// };
-// async function run() {
-//   try {
-//     // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
-//     await mongoose.connect(uri, clientOptions);
-//     await mongoose.connection.db.admin().command({ ping: 1 });
-//     console.log(
-//       'Pinged your deployment. You successfully connected to MongoDB!'
-//     );
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     await mongoose.disconnect();
-//   }
-// }
-// run().catch(console.dir);
-// // mongoose.connect(
-// //   'mongodb+srv://sammrguez:IRNIclusterpassword@irnicluster.hjnrszc.mongodb.net/?retryWrites=true&w=majority&appName=IRNIcluster'
-// // );
-// // const db = mongoose.connection;
-
-// // db.on('error', (err) => {
-// //   console.error('Error de conexión a la base de datos:', err);
-// // });
-
-// // db.once('open', () => {
-// //   console.log('Conexión exitosa a la base de datos');
-// // });
-
-// /* parsers */
-// app.use(express.static(path.join(__dirname, 'public')));
-// app.use(express.json());
-
-// /* cors */
-// app.use(
-//   cors({
-//     origin: '*',
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//     preflightContinue: false,
-//     optionsSuccessStatus: 200,
-//   })
-// );
-
-// /* importando routers */
-// const productsRouter = require('./routes/products');
-// const usersRouter = require('./routes/users');
-// const ordersRouter = require('./routes/orders.js');
-
-// /* usando routers */
-
-// app.use('/', productsRouter);
-// app.use('/', usersRouter);
-// app.use('/', ordersRouter);
-
-// /* conect to port */
-// app.listen(PORT, () => {
-//   console.log('app listening in port 3000');
-// });
 const express = require('express');
 const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { requestLogger, errorLogger } = require('./middleware/logger');
+const { HttpStatus, HttpResponseMessage } = require('./enums/http');
+const { errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
@@ -110,6 +43,12 @@ app.use(
   })
 );
 
+app.use(requestLogger);
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('El servidor va a caer');
+  }, 0);
+});
 /* importando routers */
 const productsRouter = require('./routes/products');
 const usersRouter = require('./routes/users');
@@ -119,6 +58,20 @@ const ordersRouter = require('./routes/orders.js');
 app.use('/', productsRouter);
 app.use('/', usersRouter);
 app.use('/', ordersRouter);
+
+app.use(errorLogger);
+app.use(errors());
+app.use('/', (req, res) => {
+  return res.status(HttpStatus.NOT_FOUND).send(HttpResponseMessage.NOT_FOUND);
+});
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message:
+      statusCode === 500 ? 'Se ha producido un error en el servidor' : message,
+  });
+});
 
 /* conect to port */
 app.listen(PORT, () => {
@@ -139,11 +92,3 @@ mongoose.connection.on('disconnected', () => {
 });
 
 // If the Node process ends, close the Mongoose connection
-process.on('SIGINT', () => {
-  mongoose.connection.close(() => {
-    console.log(
-      'Mongoose default connection disconnected through app termination'
-    );
-    process.exit(0);
-  });
-});

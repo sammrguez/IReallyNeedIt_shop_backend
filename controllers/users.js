@@ -3,8 +3,15 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { NODE_ENV, JWT_SECRET } = process.env;
+const {
+  ERROR_CODE,
+  NOT_FOUND_CODE,
+  SERVER_ERROR_CODE,
+  INVALID_DATA_ERROR_CODE,
+  UNAUTHORIZED_ERROR_CODE,
+} = require('../controllers/errors');
 
-module.exports.createUserAndLogin = (req, res) => {
+module.exports.createUserAndLogin = (req, res, next) => {
   const { name, email, googleId } = req.body;
   return User.findOne({ email })
     .select('+hashedGoogleId')
@@ -29,16 +36,14 @@ module.exports.createUserAndLogin = (req, res) => {
               res.status(200).json({ user, token });
             })
 
-            .catch((err) => {
-              res.send(err);
-            });
+            .catch(next);
         });
       } else {
         return bcrypt
           .compare(googleId, user.hashedGoogleId)
           .then((matched) => {
             if (!matched) {
-              return Promise.reject(new Error('error al iniciar sesion'));
+              throw new INVALID_DATA_ERROR_CODE('error al iniciar sesión');
             }
             return user;
           })
@@ -48,34 +53,27 @@ module.exports.createUserAndLogin = (req, res) => {
             });
             res.status(200).json({ user, token });
           })
-          .catch((err) => {
-            console.log(err);
-          });
+          .catch(next);
       }
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch(next);
 };
 
-module.exports.userData = (req, res) => {
+module.exports.userData = (req, res, next) => {
   const userId = req.user._id;
   if (!userId) {
-    return res.status(401).send({ message: 'no tienes authorizacion' });
+    return SERVER_ERROR_CODE('ha habido un problema en el servidor');
   } else {
     User.findById(userId)
-      // // .orFail((error) => {
-      // //   error.statusCode = 404;
-      // //   throw error;
-      // // })
+      .orFail()
       .then((user) => {
         res.send(user);
-        console.log(user);
-      });
+      })
+      .catch(next);
   }
 };
 
-module.exports.addAddress = (req, res) => {
+module.exports.addAddress = (req, res, next) => {
   const address = req.body;
   const userId = req.user._id;
 
@@ -86,8 +84,6 @@ module.exports.addAddress = (req, res) => {
       .then((user) => {
         res.send(user);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(next);
   }
 };
