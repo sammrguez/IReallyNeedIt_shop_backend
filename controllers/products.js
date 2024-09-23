@@ -26,6 +26,6 @@ module.exports.getProduct = (req, res) => {
       res.send(product);
     })
     .catch((err) => {
-      res.status(404).send({ message: "Producto no encontrado" });
+      res.status(404).send({ message: "Producto no existente" });
     });
 };
