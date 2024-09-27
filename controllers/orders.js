@@ -1,17 +1,14 @@
 const shortid = require("shortid");
 const User = require("../models/user");
 const Order = require("../models/order");
-const mercadopago = require("mercadopago");
-const {
-  ERROR_CODE,
-  NOT_FOUND_CODE,
-  SERVER_ERROR_CODE,
-  INVALID_DATA_ERROR_CODE,
-  UNAUTHORIZED_ERROR_CODE,
-} = require("../controllers/errors");
+const mercadopago = require("mercadopago"); // Importar Mercado Pago
 
-// Configurar Mercado Pago con tu API Key
-// mercadopago.configurations.setAccessToken("TU_ACCESS_TOKEN");
+// Configurar Mercado Pago con el Access Token
+mercadopago.configure({
+  access_token:
+    "APP_USR-1535422911594285-092620-35579eecddefaef5ff6ea9e173e260fe-2004100643",
+});
+// Reemplaza "TU_ACCESS_TOKEN" con el token real
 
 module.exports.makeOrder = (req, res, next) => {
   const items = req.body;
@@ -44,20 +41,25 @@ module.exports.makeOrder = (req, res, next) => {
               email: user.email,
             },
             back_urls: {
-              success: "https://ireallyneedit.com.mx/", // Cambia estas URLs por las de tu sitio
+              success: "https://ireallyneedit.com.mx/success", // Asegúrate de que estas URLs son correctas
               failure: "https://ireallyneedit.com.mx/failure",
               pending: "https://ireallyneedit.com.mx/pending",
             },
             external_reference: trackId, // Esto ayuda a relacionar el pago con la orden
           };
 
+          console.log("preferencias de mercado libre:");
+          console.log(preference);
           // Crear preferencia en Mercado Pago
           mercadopago.preferences
             .create(preference)
             .then((response) => {
+              const preferenceId = response.body.id;
+              console.log(preferenceId);
               res.status(200).json({
                 trackId: trackId,
                 init_point: response.body.init_point, // URL del checkout de Mercado Pago
+                preferenceId: preferenceId,
               });
             })
             .catch((err) => {
@@ -65,9 +67,7 @@ module.exports.makeOrder = (req, res, next) => {
                 "Error creando la preferencia de Mercado Pago: ",
                 err
               );
-              res
-                .status(SERVER_ERROR_CODE)
-                .json({ message: "Error al procesar el pago" });
+              res.status(500).json({ message: "Error al procesar el pago" });
             });
         })
         .catch(next);

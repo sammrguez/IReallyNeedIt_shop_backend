@@ -19,7 +19,7 @@
     "express": "^4.19.2",
     "express-winston": "^4.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mercadopago": "^2.0.15",
+    "mercadopago": "^1.5.8",
     "mongodb": "^6.6.0",
     "mongoose": "^8.2.4",
     "shortid": "^2.2.16",
