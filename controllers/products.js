@@ -19,10 +19,14 @@ module.exports.getPromoProduct = (req, res) => {
 };
 
 module.exports.getProduct = (req, res) => {
+  // console.log("desde server get product");
+  // console.log(req.params);
   const productId = req.params.id;
+  console.log(productId);
   Product.findById(productId)
     .orFail()
     .then((product) => {
+      console.log(product);
       res.send(product);
     })
     .catch((err) => {

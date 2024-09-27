@@ -1,9 +1,10 @@
-const router = require('express').Router();
+const router = require("express").Router();
 
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
 
-const { makeOrder } = require('../controllers/orders.js');
+const { makeOrder } = require("../controllers/orders.js");
 
-router.post('/orders/confirm', auth, makeOrder);
+router.post("/resumen", auth, makeOrder);
+// router.post("/orders/confirm", auth, makeOrder);
 
 module.exports = router;
