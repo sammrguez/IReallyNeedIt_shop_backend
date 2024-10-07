@@ -8,7 +8,20 @@ mercadopago.configure({
   access_token:
     "APP_USR-1535422911594285-092620-35579eecddefaef5ff6ea9e173e260fe-2004100643",
 });
-// Reemplaza "TU_ACCESS_TOKEN" con el token real
+
+// lista de precios
+const shippingRates = {
+  CDMX: 120,
+  Jalisco: 200,
+  "Nuevo León": 210,
+  Otros: 250,
+};
+
+// calcula el precio //
+
+function calcularEnvio(estado) {
+  return shippingRates[estado] || shippingRates["Otros"]; // Devuelve el costo del estado o el valor 'Otros' por defecto
+}
 
 module.exports.makeOrder = (req, res, next) => {
   const items = req.body;
@@ -21,6 +34,13 @@ module.exports.makeOrder = (req, res, next) => {
     .then((user) => {
       console.log(user);
       // Crear la orden en tu base de datos
+
+      if (!user.address) {
+        return res
+          .status(400)
+          .json({ message: "Completa tu dirección antes de continuar" });
+      }
+      const shippingCost = calcularEnvio(user.address.state);
       Order.create({
         items: items,
         user: user,
@@ -30,13 +50,22 @@ module.exports.makeOrder = (req, res, next) => {
         .then((order) => {
           console.log(order);
           // Generar la preferencia de Mercado Pago
+
           const preference = {
-            items: items.map((item) => ({
-              title: item.name,
-              quantity: item.quantity,
-              currency_id: "MXN",
-              unit_price: item.price,
-            })),
+            items: [
+              ...items.map((item) => ({
+                title: item.name,
+                quantity: item.quantity,
+                currency_id: "MXN",
+                unit_price: item.price,
+              })),
+              {
+                title: "Costo de Envío",
+                quantity: 1,
+                currency_id: "MXN",
+                unit_price: shippingCost,
+              },
+            ],
             payer: {
               email: user.email,
             },
@@ -45,7 +74,8 @@ module.exports.makeOrder = (req, res, next) => {
               failure: "https://ireallyneedit.com.mx/failure",
               pending: "https://ireallyneedit.com.mx/pending",
             },
-            external_reference: trackId, // Esto ayuda a relacionar el pago con la orden
+            auto_return: "approved",
+            external_reference: trackId,
           };
 
           console.log("preferencias de mercado libre:");

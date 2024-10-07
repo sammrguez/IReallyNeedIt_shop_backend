@@ -6,7 +6,6 @@ const cors = require("cors");
 const { requestLogger, errorLogger } = require("./middleware/logger");
 const { HttpStatus, HttpResponseMessage } = require("./enums/http");
 const { errors } = require("celebrate");
-const mercadopago = require("mercadopago");
 
 const { PORT = 3000 } = process.env;
 
@@ -22,8 +21,7 @@ async function connectToDatabase() {
     console.log("Connected to MongoDB Atlas!");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
-    // Si ocurre un error al conectar, puedes decidir cómo manejarlo aquí
-    // Por ejemplo, podrías intentar reconectar o detener el servidor
+
     process.exit(1);
   }
 }
@@ -96,5 +94,3 @@ mongoose.connection.on("error", (err) => {
 mongoose.connection.on("disconnected", () => {
   console.log("Mongoose default connection disconnected");
 });
-
-// If the Node process ends, close the Mongoose connection
