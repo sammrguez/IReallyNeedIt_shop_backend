@@ -70,7 +70,7 @@ module.exports.makeOrder = (req, res, next) => {
               email: user.email,
             },
             back_urls: {
-              success: "https://ireallyneedit.com.mx/success", // Asegúrate de que estas URLs son correctas
+              success: "https://ireallyneedit.com.mx/success",
               failure: "https://ireallyneedit.com.mx/failure",
               pending: "https://ireallyneedit.com.mx/pending",
             },
